@@ -106,7 +106,17 @@ class PhraseVisualizer {
           //display the string
           text(iString, (i*width/16)+(2*width/64)
           , (height/2)-(height/12));
+          let distance = dist(mouseX, mouseY, (i*width/16)+(2*width/64),(height/2));
+          if(distance < 20){
+            //fill(255, 255, 255, 255);
+           cursor(HAND);
+            if (mouseIsPressed){
+              if(this.seq[i] === 1) this.seq[i] = 0;
+              else this.seq[i] = 1;
+            }
+          }
   }
+
 }
 }
 
