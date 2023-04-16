@@ -177,6 +177,10 @@ class PhraseVisualizer {
 
 }
 }
+function windowResized() {
+  resizeCanvas(window.innerWidth, window.innerHeight);
+  tempoSlider.position(width-200, height-50);
+}
 
   
 
