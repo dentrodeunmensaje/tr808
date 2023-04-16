@@ -22,7 +22,7 @@ function preload(){
   snare = loadSound('assets/snare-808.mp3');
   hiHat = loadSound('assets/hihat-808.mp3');
   openHat = loadSound('assets/openhat-808.mp3');
-  lowTom = loadSound('assets/openhat-808.mp3');
+  lowTom = loadSound('assets/lowtom-808.mp3');
   clave = loadSound('assets/clave-808.mp3');
   clap = loadSound('assets/clap-808.mp3');
   displayType = 'seq';
@@ -33,7 +33,7 @@ function preload(){
     if(i === 1) phraseVisualizer.push(new PhraseVisualizer(snarePat, 'Snare'));
     if(i === 2) phraseVisualizer.push(new PhraseVisualizer(hiHatPat, 'Hi hat'));
     if(i === 3) phraseVisualizer.push(new PhraseVisualizer(openHatPat, 'Open hat'));
-    if(i === 4) phraseVisualizer.push(new PhraseVisualizer(lowTomPat, 'Low tom'));
+    if(i === 4) phraseVisualizer.push(new PhraseVisualizer(lowTomPat, 'Conga'));
     if(i === 5) phraseVisualizer.push(new PhraseVisualizer(clavePat, 'Clave'));
     if(i === 6) phraseVisualizer.push(new PhraseVisualizer(clapPat, 'Clap'));
   }
@@ -43,7 +43,7 @@ function setup(){
   let cnv = createCanvas(window.innerWidth, window.innerHeight);
   //cnv.mousePressed(playAllParts);
   background(12,12,12);
- tempoSlider = createSlider(60,140,90,1);
+ tempoSlider = createSlider(30,140,90,1);
  tempoSlider.position(width-200, height-50);
  tempoSlider.style('width', '80px')
  tempoSlider.input(updatetempo);
@@ -118,12 +118,6 @@ function changeStop(){
 }
 function changeClear(){
   
-  myPart.replaceSequence('kick', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
-  myPart.replaceSequence('snare', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
-  myPart.replaceSequence('hiHat', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
-  myPart.replaceSequence('openHat', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
-  myPart.replaceSequence('clap', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
-  myPart.replaceSequence('clave', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
   phraseVisualizer[0].clearSeq();
   phraseVisualizer[1].clearSeq();
   phraseVisualizer[2].clearSeq();
@@ -166,7 +160,7 @@ class PhraseVisualizer {
     }
   }
   drawPhrase(num){
-    fill(255);
+    
     for(let i = 0; i < this.seq.length; i++){
       let alpha;
       if(this.seq[i] === 1) {
@@ -174,9 +168,6 @@ class PhraseVisualizer {
       } else {
         alpha = 30;
       }
-      fill(255, 255, 255, alpha);
-      textSize(32);
-      text(this.name, width/this.seq.length, (height/this.seq.length)*(num*2)+50);
        //red for the first 4 steps, orange for the next 4, and yellow for the next 4 and white for the last 4
       fill(255, 0, 0, alpha);
       if (i >= 4 && i < 8) fill(255, 165, 0, alpha);
@@ -204,17 +195,26 @@ class PhraseVisualizer {
           text(iString, (i*width/16)+(2*width/64)
           , height/this.seq.length-50);
           pop();
-          let distance = dist(mouseX, mouseY, (i*width/16)+(2*width/64),(height/2));
+          let distance = dist(mouseX, mouseY, (i*width/16)+(2*width/64),(height/this.seq.length)*(num*2));
           if(distance < 20){
             //fill(255, 255, 255, 255);
            cursor(HAND);
+           noFill();
+           strokeWeight(5);
+           stroke(255);
+           //rectMode(CENTER);
+           //rect((i*width/16)+(2*width/64), (height/this.seq.length)*(num*2), width/22, height/10, 10);
             if (mouseIsPressed){
               if(this.seq[i] === 1) this.seq[i] = 0;
               else this.seq[i] = 1;
             }
+          }else{
+            cursor(ARROW);
           }
   }
-
+  fill(255);
+  textSize(32);
+  text(this.name, width/this.seq.length, (height/this.seq.length)*(num*2)+50);
 }
 }
 function windowResized() {
