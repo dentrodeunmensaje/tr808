@@ -2,14 +2,17 @@ let kick, snare, hiHat, openHat, lowTom, clap, clave, myPart;
 let kickPat = [1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0];
 let snarePat = [0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1];
 let hiHatPat = [0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1];
-let openHatPat = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-let lowTomPat = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-let clapPat = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0]
-let clavePat = [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]
+let openHatPat = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+let lowTomPat = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+let clapPat = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0];
+let clavePat = [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0];
 let phraseVisualizer= [];
 let tempo;
 let tempoSlider;
 let displayType;
+let playButton;
+let stopButton;
+let clearButton;
 
 
 
@@ -25,7 +28,7 @@ function preload(){
   displayType = 'seq';
   
   tempo = 90;
-  for(let i = 0; i < 11; i++){
+  for(let i = 0; i < 8; i++){
     if(i === 0) phraseVisualizer.push(new PhraseVisualizer(kickPat, 'Kick'));
     if(i === 1) phraseVisualizer.push(new PhraseVisualizer(snarePat, 'Snare'));
     if(i === 2) phraseVisualizer.push(new PhraseVisualizer(hiHatPat, 'Hi hat'));
@@ -38,14 +41,21 @@ function preload(){
 
 function setup(){
   let cnv = createCanvas(window.innerWidth, window.innerHeight);
-  cnv.mousePressed(playAllParts);
+  //cnv.mousePressed(playAllParts);
   background(12,12,12);
  tempoSlider = createSlider(60,140,90,1);
  tempoSlider.position(width-200, height-50);
  tempoSlider.style('width', '80px')
  tempoSlider.input(updatetempo);
-  
-
+  playButton = createButton('▶️');
+  playButton.position(width/2,height-75);
+  playButton.mousePressed(changePlay);
+  stopButton = createButton('⏹️');
+  stopButton.position(width/2-40,height-75);
+  stopButton.mousePressed(changeStop);
+  clearButton = createButton('CLEAR PARTS');
+  clearButton.position(width/2+40,height-75);
+  clearButton.mousePressed(changeClear);
   let kickPhrase = new p5.Phrase('kick', playKick, kickPat);  
   let snarePhrase = new p5.Phrase('snare', playSnare, snarePat);  
   let hiHatPhrase = new p5.Phrase('hiHat', playHiHat, hiHatPat);    
@@ -66,7 +76,7 @@ function setup(){
 function updatetempo(){
   tempo = tempoSlider.value();
   myPart.setBPM(tempo);
-  console.log('updatetempo changed')
+  //console.log('updatetempo changed')
 }
 function playAllParts(){
   myPart.loop();
@@ -100,6 +110,31 @@ function playclap(time, playbackRate){
   clap.rate(playbackRate);
   clap.play(time);
 }
+function changePlay(){
+  playAllParts();
+}
+function changeStop(){
+ myPart.stop(); 
+}
+function changeClear(){
+  
+  myPart.replaceSequence('kick', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
+  myPart.replaceSequence('snare', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
+  myPart.replaceSequence('hiHat', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
+  myPart.replaceSequence('openHat', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
+  myPart.replaceSequence('clap', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
+  myPart.replaceSequence('clave', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);  
+  phraseVisualizer[0].clearSeq();
+  phraseVisualizer[1].clearSeq();
+  phraseVisualizer[2].clearSeq();
+  phraseVisualizer[3].clearSeq();
+  phraseVisualizer[4].clearSeq();
+  phraseVisualizer[5].clearSeq();
+  phraseVisualizer[6].clearSeq();
+    
+}
+
+
 
 
 function draw(){
@@ -113,6 +148,7 @@ function draw(){
     const element = phraseVisualizer[index];
     element.drawPhrase(index);
   }
+  
 }
 //lets create a class that will hold all the information for our phrase visualizer
 class PhraseVisualizer {
@@ -124,12 +160,16 @@ class PhraseVisualizer {
     this.h = 0;    
     this.name = name;
   }
+  clearSeq(){
+    for(let i = 0; i < this.seq.length; i++){
+      this.seq[i]=0;
+    }
+  }
   drawPhrase(num){
     fill(255);
     for(let i = 0; i < this.seq.length; i++){
       let alpha;
       if(this.seq[i] === 1) {
-         //red for the first 4 steps, orange for the next 4, and yellow for the next 4 and white for the last 4
         alpha = 255;
       } else {
         alpha = 30;
@@ -180,6 +220,9 @@ class PhraseVisualizer {
 function windowResized() {
   resizeCanvas(window.innerWidth, window.innerHeight);
   tempoSlider.position(width-200, height-50);
+  playButton.position(width/2,height-75);
+  stopButton.position(width/2-40,height-75);
+  clearButton.position(width/2+40,height-75);
 }
 
   
